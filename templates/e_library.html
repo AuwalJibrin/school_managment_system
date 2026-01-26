@@ -1,0 +1,40 @@
+{% extends "base.html"%}
+{% load static%}
+{% block title %}Elaibries{% endblock title %}
+
+{% block body%}
+
+<br>
+<br>
+
+<div class="container my-5">
+    <h2 class="text-center mb-4">E-Library</h2>
+
+    <div class="row">
+        {% for book in books %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}">
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+
+                    <a href="{{ book.pdf_file.url }}" target="_blank" class="btn btn-success btn-sm">
+                        View PDF
+                    </a>
+
+                    <a href="{{ book.pdf_file.url }}" download class="btn btn-primary btn-sm">
+                        Download PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No books available.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock body%}

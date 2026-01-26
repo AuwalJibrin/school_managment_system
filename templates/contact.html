@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Contact Us{% endblock title %}
+
+{%block body%}
+{%load static%}
+
+<br>
+<br>
+
+
+</section>
+
+
+<br>
+<div class="bg-dark text-white">
+  <!-- Hero -->
+  <section class="bg-dark text-white text-center py-5">
+    <div class="container">
+      <h1 class="fw-bold">Contact Us</h1>
+      <p class="lead">We’d love to hear from you</p>
+    </div>
+  </section>
+<div class="bg-dark text-white">
+  <!-- Hero -->
+  <!-- 1Contact Section -->
+  <section class="py-5">
+    <div class="container">
+      <div class="row g-4">
+
+        <!-- Contact Info -->
+        <div class="col-lg-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h4 class="mb-4">Get in Touch</h4>
+
+              <p><i class="fa-solid fa-location-dot text-primary me-2"></i> Nigeria</p>
+              <p><i class="fa-solid fa-phone text-primary me-2"></i> +234 000 000 0000</p>
+              <p><i class="fa-solid fa-envelope text-primary me-2"></i> tef@gmail.com</p>
+
+               <hr>
+              
+              <p class="fw-semibold mb-2 ">Follow Us</p>
+              <div class="social-links color-dark fw-bold" style="display:flex; flex-direction:column; gap:10px ">
+                  <a href="#" class="me-3 text-dark" style="text-decoration:none "><i class="fab fa-facebook fa-lg ">Facebook</i></a>
+                  <a href="#" class="me-3 text-dark" style="text-decoration:none "><i class="fab fa-twitter fa-lg">Twitter</i></a>
+                  <a href="#" class="me-3 text-dark" style="text-decoration:none "><i class="fab fa-instagram fa-lg">Instagram</i></a>
+                  <a href="#" class="text-dark" style="text-decoration:none "><i class="fab fa-linkedin fa-lg">LinkedIn</i></a>
+              </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-lg-8">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h4 class="mb-4">Send Us a Message</h4>
+
+              <form method="post">
+                <!-- Django CSRF (safe to keep even for HTML) -->
+                {% csrf_token %}
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" placeholder="Your name">
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" placeholder="you@example.com">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Subject</label>
+                  <input type="text" class="form-control" placeholder="Subject">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Message</label>
+                  <textarea class="form-control" rows="5" placeholder="Write your message..."></textarea>
+                </div>
+
+                <button class="btn btn-primary px-4">
+                  <i class="fa-solid fa-paper-plane me-1"></i> Send Message
+                </button>
+              </form>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div> 
+
+  <!-- Google Map -->
+  
+{% endblock body%}
