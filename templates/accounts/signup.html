@@ -32,11 +32,14 @@
                     {% else %}
                     <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
                     {% endif %}
-                    <!-- We need to ensure the form fields have 'form-control' class. 
-                          Ideally this is done in forms.py widget, but for robustness: -->
-                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}"
+
+                    {% if field.field.widget.input_type == 'select' or field.field.choices %}
+                    {{ field }}
+                    {% else %}
+                    <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}"
                         class="form-control border-start-0 ps-0" {% if field.value %}value="{{ field.value }}" {% endif
                         %} {% if field.field.required %}required{% endif %}>
+                    {% endif %}
                 </div>
                 {% if field.help_text %}
                 <div class="form-text small">{{ field.help_text }}</div>
