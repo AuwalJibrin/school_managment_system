@@ -1,40 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Sign Up</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+{% extends 'accounts/auth_base.html' %}
+{% block title %}Sign Up | TEF FUN{% endblock %}
 
-<div class="container mt-5">
-    <div class="card p-4 shadow mx-auto" style="max-width: 500px;">
-        <h3 class="text-center mb-4">Create Account</h3>
+{% block content %}
+<div class="card auth-card">
+    <div class="auth-header">
+        <h3 class="fw-bold mb-1">Create Account</h3>
+        <p class="text-muted">Join the community today</p>
+    </div>
+
+    <div class="auth-body">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
 
         <form method="POST">
             {% csrf_token %}
 
             {% for field in form %}
-                <div class="mb-3">
-                    <label class="form-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="text-danger small">
-                            {{ field.errors }}
-                        </div>
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold">{{ field.label }}</label>
+                {{ field.errors }}
+                <!-- Render field manually or inject class if using widgets in forms.py, generic fallback here -->
+                <div class="input-group">
+                    {% if 'password' in field.name %}
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
+                    {% else %}
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
                     {% endif %}
+                    <!-- We need to ensure the form fields have 'form-control' class. 
+                          Ideally this is done in forms.py widget, but for robustness: -->
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}"
+                        class="form-control border-start-0 ps-0" {% if field.value %}value="{{ field.value }}" {% endif
+                        %} {% if field.field.required %}required{% endif %}>
                 </div>
+                {% if field.help_text %}
+                <div class="form-text small">{{ field.help_text }}</div>
+                {% endif %}
+            </div>
             {% endfor %}
 
-            <button class="btn btn-primary w-100">Register</button>
+            <button class="btn btn-primary w-100 shadow-sm mt-2">Sign Up</button>
         </form>
 
-        <p class="text-center mt-3">
-            Already have an account?
-            <a href="{% url 'signin' %}">Sign In</a>
-        </p>
+        <div class="text-center mt-4 pt-3 border-top">
+            <p class="text-muted small mb-0">
+                Already have an account? <a href="{% url 'signin' %}" class="fw-bold text-decoration-none">Sign In</a>
+            </p>
+        </div>
     </div>
 </div>
-
-</body>
-</html>
+{% endblock %}

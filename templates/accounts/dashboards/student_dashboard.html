@@ -1,125 +1,75 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}Student Dashboard | TEF FUN{% endblock %}
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">School System</a>
-  <div class="collapse navbar-collapse">
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown">
-          {{ request.user.username }}
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-          <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
-        </ul>
-      </li>
-    </ul>
-  </div>
-</nav>
-
-<h2>Staff Dashboard</h2>
-
+{% block content %}
 <div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-body">
-                <h5 class="card-title">Students under your supervision</h5>
-                <p>Total: {{ total_students }}</p>
-                <table class="table table-striped">
-                    <thead>
-                        <tr><th>Username</th><th>Email</th></tr>
-                    </thead>
-                    <tbody>
-                        {% for student in students %}
-                        <tr>
-                            <td>{{ student.username }}</td>
-                            <td>{{ student.email }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-body">
-                <h5 class="card-title">Books assigned to you</h5>
-                <canvas id="booksChart"></canvas>
+    <div class="col-12">
+        <div class="card bg-primary text-white border-0 shadow-sm overflow-hidden">
+            <div class="card-body p-4 position-relative">
+                <div class="position-absolute end-0 top-0 opacity-25 me-4 mt-2">
+                    <i class="bi bi-mortarboard" style="font-size: 8rem;"></i>
+                </div>
+                <h2 class="fw-bold">Hello, {{ user.username }}!</h2>
+                <p class="fs-5 mb-0 opacity-75">Ready to continue learning today?</p>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-const booksChart = new Chart(document.getElementById('booksChart'), {
-    type: 'bar',
-    data: {
-        labels: {{ categories|safe }},
-        datasets: [{
-            label: 'Books by Category',
-            data: {{ books_by_category|safe }},
-            backgroundColor: '#0d6efd'
-        }]
-    },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-});
-</script>
-
-<table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Active</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
-                <td>{{ user.is_active }}</td>
-            </tr>
+<div class="row g-4">
+    <!-- Available Books -->
+    <div class="col-lg-8">
+        <h4 class="mb-3 fw-bold">Available Books</h4>
+        <div class="row g-3">
+            {% for book in books %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-up transition-base">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="badge bg-danger-subtle text-danger rounded-pill">{{ book.category }}</span>
+                            <i class="bi bi-bookmark text-muted"></i>
+                        </div>
+                        <h5 class="card-title fw-bold text-truncate">{{ book.title }}</h5>
+                        <p class="card-text text-muted small mb-3">
+                            Click to view details and start reading.
+                        </p>
+                        <a href="#" class="btn btn-outline-primary btn-sm w-100">Read Now</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">No books available at the moment.</div>
+            </div>
             {% endfor %}
-        </tbody>
-    </table>
-</div>
-<!-- chart.js -->
- <script src= "https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const rolesChart = new Chart(document.getElementById('rolesChart'), {
-            type: 'doughnut',
-            data: {
-                labels: {{ roles_chart_data.labels|safe }},
-                datasets: [{
-                    label: 'Users by Role',
-                    data: {{ roles_chart_data.counts|safe }},
-                    backgroundColor: ['#198754', '#ffc107', '#0d6efd'],
-                }]
-            }
-        });
-    
-        const booksChart = new Chart(document.getElementById('booksChart'), {
-            type: 'bar',
-            data: {
-                labels: {{ categories|safe }},
-                datasets: [{
-                    label: 'Books by Category',
-                    data: {{ books_by_category|safe }},
-                    backgroundColor: '#dc3545'
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true } }
-            }
-        });
+        </div>
+    </div>
 
-    </script>
-            <tr>
-                <td colspan= "4" class="text-center">No users found.</td>
-            </tr>
-            
+    <!-- Sidebar widgets -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="card-title mb-0 fw-bold">My Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Total Books Access</span>
+                    <span class="fw-bold">{{ total_books }}</span>
+                </div>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: 75%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="card-title mb-0 fw-bold">Notices</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">No new announcements from your teachers.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

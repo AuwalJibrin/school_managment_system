@@ -33,11 +33,3 @@ urlpatterns = [
 if settings.DEBUG:
   urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-AUTH_USER_MODEL = 'accountss.User'
-
-LOGIN_URL = 'signin'
-LOGIN_REDIRECT_URL = 'redirect-dashboard'
-LOGOUT_REDIRECT_URL = 'signin'
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'auwaljibrin470@gmail.com'
