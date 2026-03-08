@@ -1,0 +1,42 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}{{ title }} | TEF FUN{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h4 class="fw-bold mb-0 text-dark">{{ title }}</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-muted small" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text mt-1 small">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ field.errors|first }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'admin-dashboard' %}" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">Save Book</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

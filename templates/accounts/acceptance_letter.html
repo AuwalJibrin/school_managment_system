@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceptance Letter - {{ user.username }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f7f6;
+            font-family: 'Times New Roman', Times, serif;
+            color: #333;
+        }
+
+        .letter-container {
+            background: #fff;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                margin: 0;
+            }
+
+            .letter-container {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+
+            .btn-print {
+                display: none;
+            }
+        }
+
+        .header-logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1a237e;
+            border-bottom: 2px solid #1a237e;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .date-section {
+            text-align: right;
+            margin-bottom: 40px;
+        }
+
+        .salutation {
+            margin-bottom: 20px;
+        }
+
+        .letter-content {
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .footer-section {
+            margin-top: 100px;
+        }
+
+        .signature-line {
+            width: 200px;
+            border-top: 1px solid #333;
+            margin-top: 50px;
+        }
+
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            opacity: 0.05;
+            font-size: 8rem;
+            font-weight: bold;
+            color: #1a237e;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="window.print()" class="btn btn-primary btn-print px-4 shadow">
+        <i class="bi bi-printer me-2"></i> Print / Save as PDF
+    </button>
+
+    <div class="letter-container">
+        <div class="watermark">TEF FUNDATION</div>
+
+        <div class="header-logo d-flex justify-content-between align-items-center">
+            <span>TEF FUNDATION</span>
+            <small style="font-size: 0.9rem; font-weight: normal; color: #666;">ACADEMIC EXCELLENCE</small>
+        </div>
+
+        <div class="date-section">
+            <p><strong>Date:</strong> {{ today|date:"F d, Y" }}</p>
+            <p><strong>Ref:</strong> ADM-{{ user.id }}-{{ today|date:"Y" }}</p>
+        </div>
+
+        <div class="recipient-info mb-5">
+            <p><strong>To:</strong></p>
+            <p class="mb-1">{{ user.get_full_name|default:user.username }}</p>
+            <p class="mb-1">{{ user.email }}</p>
+            <p>Student ID: #{{ user.id|stringformat:"05d" }}</p>
+        </div>
+
+        <div class="salutation">
+            <p>Dear {{ user.username }},</p>
+        </div>
+
+        <div class="letter-content">
+            <p> We are pleased to inform you that your academic documents have been successfully verified by our
+                admissions committee. This letter serves as official confirmation of your <strong>Full
+                    Acceptance</strong> into our academic program at TEF FUNDATION. </p>
+
+            <p> Based on the verification of your submitted documents, you are now officially registered as a verified
+                student. You have been granted full access to all student resources, including the digital dashboard,
+                learning materials, and academic support services. </p>
+
+            <p> Please present a printed copy of this letter to the School Management Office during your physical
+                orientation. Your registration is subject to the continuous adherence to the school's code of conduct
+                and academic regulations. </p>
+
+            <p> We congratulate you on reaching this milestone and look forward to your contributions to our academic
+                community. </p>
+        </div>
+
+        <div class="footer-section">
+            <p>Sincerely,</p>
+            <div class="signature-line"></div>
+            <p class="mt-2 fw-bold">Management Office</p>
+            <p class="text-muted small">TEF FUNDATION Academic Board</p>
+        </div>
+
+        <div class="text-center mt-5 pt-5 opacity-50 small">
+            <p>This is a computer-generated document and is valid only after administrative verification on the portal.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

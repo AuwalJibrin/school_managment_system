@@ -1,29 +1,19 @@
 {% extends "base.html" %}
 
 {%load static%}
-{%block title%}home page{% endblock %}
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+{%block title%}Home{% endblock %}
 {%block body%}
 
-<div class="hero-section bg-dark color-light p-50px mb-30px">
-        <div class="hero-container max-width-1200px margin-auto display-flex justify-space-between align-center  flex-wrap gap-20px">
-            <div class="hero-text max-width-600px">
-                <h1 class="color-light">TUDUN FAIRA EDUCATIONAL <br>FOUNDATION</h1>
-                <p class="color-light ">Empowering Student through specialized Extra-Mural Lession, academic<br>Mentorship, and exam excellence strategies</p>
-                <a href="#" class="hero-btn ">Enroll your child now</a>
 
 
-            </div>
-        </div>
-    </div>
-
-    <!-- HERO SECTION -->
+<!-- HERO SECTION -->
 <section class="bg-dark text-white py-5">
   <div class="container text-center">
-    <h1 class="fw-bold"><span class="text-primary">ABOUT</span> TUDUN <span class="text-primary">FAIRA</span> EXTRA<span class="text-primary"> MORAL</span> LEASSON</h1>
+    <h1 class="fw-bold"><span class="text-primary">ABOUT</span> TUDUN <span class="text-primary">FAIRA</span> EXTRA<span
+        class="text-primary"> MORAL</span> LEASSON</h1>
     <p class="lead mt-3">
-        Empowering Student through specialized Extra-Mural Lession, academic<br>
-        Mentorship, and exam excellence strategies
+      Empowering Student through specialized Extra-Mural Lession, academic<br>
+      Mentorship, and exam excellence strategies
     </p>
   </div>
 </section>
@@ -35,11 +25,7 @@
 
       <!-- Image -->
       <div class="col-lg-6">
-        <img
-          src="{% static 'img/content-rvm.png' %}"
-          alt="School System"
-          class="img-fluid rounded shadow"
-        >
+        <img src="{% static 'img/content-rvm.png' %}" alt="School System" class="img-fluid rounded shadow">
       </div>
 
       <!-- Text -->
@@ -170,14 +156,12 @@
 <br>
 <div class="bg-dark text-white">
   <!-- Hero -->
-  <section class="bg-dark text-white text-center py-5">
-    <div class="container">
-      <h1 class="fw-bold">Contact Us</h1>
-      <p class="lead">We’d love to hear from you</p>
-    </div>
-  </section>
+  <div class="container text-center">
+    <h1 class="fw-bold">Contact Us</h1>
+    <p class="lead">We’d love to hear from you</p>
+  </div>
 
-  
+
   <!-- 1Contact Section -->
   <section class="py-5">
     <div class="container">
@@ -193,16 +177,20 @@
               <p><i class="fa-solid fa-phone text-primary me-2"></i> +234 000 000 0000</p>
               <p><i class="fa-solid fa-envelope text-primary me-2"></i> tef@gmail.com</p>
 
-               <hr>
-              
+              <hr>
+
               <p class="fw-semibold mb-2 ">Follow Us</p>
               <div class="social-links color-dark fw-bold" style="display:flex; flex-direction:column; gap:10px ">
-                  <a href="#" class="me-3 text-dark" style="text-decoration:none "><i class="fab fa-facebook fa-lg ">Facebook</i></a>
-                  <a href="#" class="me-3 text-dark" style="text-decoration:none "><i class="fab fa-twitter fa-lg">Twitter</i></a>
-                  <a href="#" class="me-3 text-dark" style="text-decoration:none "><i class="fab fa-instagram fa-lg">Instagram</i></a>
-                  <a href="#" class="text-dark" style="text-decoration:none "><i class="fab fa-linkedin fa-lg">LinkedIn</i></a>
+                <a href="#" class="me-3 text-dark" style="text-decoration:none "><i
+                    class="fab fa-facebook fa-lg ">Facebook</i></a>
+                <a href="#" class="me-3 text-dark" style="text-decoration:none "><i
+                    class="fab fa-twitter fa-lg">Twitter</i></a>
+                <a href="#" class="me-3 text-dark" style="text-decoration:none "><i
+                    class="fab fa-instagram fa-lg">Instagram</i></a>
+                <a href="#" class="text-dark" style="text-decoration:none "><i
+                    class="fab fa-linkedin fa-lg">LinkedIn</i></a>
               </div>
-          </div>
+            </div>
           </div>
         </div>
 
@@ -212,7 +200,7 @@
             <div class="card-body">
               <h4 class="mb-4">Send Us a Message</h4>
 
-              <form method="post">
+              <form method="post" action="{% url 'contact' %}">
                 <!-- Django CSRF (safe to keep even for HTML) -->
                 {% csrf_token %}
 
@@ -250,5 +238,5 @@
       </div>
     </div>
   </section>
-</div> 
-    {%endblock body%}
+</div>
+{%endblock body%}

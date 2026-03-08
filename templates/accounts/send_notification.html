@@ -1,0 +1,84 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Send Notification | TEF FUN{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h4 class="fw-bold mb-0 text-dark">Send Notification</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" id="notificationForm">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold text-muted small"
+                            for="{{ form.target_group.id_for_label }}">
+                            {{ form.target_group.label }}
+                        </label>
+                        {{ form.target_group }}
+                        <div class="form-text small">Select who should receive this notification.</div>
+                    </div>
+
+                    <div id="recipientSection" class="mb-3">
+                        <label class="form-label fw-semibold text-muted small" for="{{ form.user.id_for_label }}">
+                            {{ form.user.label }}
+                        </label>
+                        {{ form.user }}
+                        {% if form.user.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.user.errors|first }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-muted small" for="{{ form.message.id_for_label }}">
+                            {{ form.message.label }}
+                        </label>
+                        {{ form.message }}
+                        {% if form.message.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.message.errors|first }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger mb-3">
+                        {{ form.non_field_errors|first }}
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a href="{% url 'redirect-dashboard' %}" class="btn btn-light">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-4">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const targetGroupSelect = document.getElementById('{{ form.target_group.id_for_label }}');
+    const recipientSection = document.getElementById('recipientSection');
+
+    function toggleRecipient() {
+        if (targetGroupSelect.value !== 'specific') {
+            recipientSection.classList.add('d-none');
+        } else {
+            recipientSection.classList.remove('d-none');
+        }
+    }
+
+    targetGroupSelect.addEventListener('change', toggleRecipient);
+
+    // Initial state
+    toggleRecipient();
+</script>
+{% endblock %}

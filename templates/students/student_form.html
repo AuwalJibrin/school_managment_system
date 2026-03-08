@@ -1,0 +1,124 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}{{ title|default:"Add/Edit Student" }} | TEF FUN{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-0 text-capitalize">{{ title|default:"Add Student" }}</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'redirect-dashboard' %}"
+                        class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'attendance:student-list' %}"
+                        class="text-decoration-none">Students</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ title|default:"Add Student" }}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="card-title mb-0 fw-bold">Student Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <label for="first_name" class="form-label fw-bold small text-muted">First Name</label>
+                                <input type="text" class="form-control" name="first_name" id="id_first_name"
+                                    value="{{ form.first_name.value|default:'' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="last_name" class="form-label fw-bold small text-muted">Last Name</label>
+                                <input type="text" class="form-control" name="last_name" id="id_last_name"
+                                    value="{{ form.last_name.value|default:'' }}" required>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="email" class="form-label fw-bold small text-muted">Email Address</label>
+                                <input type="email" class="form-control" name="email" id="id_email"
+                                    value="{{ form.email.value|default:'' }}" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="username" class="form-label fw-bold small text-muted">Username</label>
+                                <input type="text" class="form-control" name="username" id="id_username"
+                                    value="{{ form.username.value|default:'' }}" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="admission_number" class="form-label fw-bold small text-muted">Registration
+                                    Number</label>
+                                <input type="text" class="form-control" name="admission_number"
+                                    id="id_registration_number" value="{{ form.admission_number.value|default:'' }}"
+                                    required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="date_of_birth" class="form-label fw-bold small text-muted">Date of
+                                    Birth</label>
+                                <input type="date" class="form-control" name="date_of_birth" id="id_date_of_birth"
+                                    value="{{ form.date_of_birth.value|date:'Y-m-d' }}">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="class_name" class="form-label fw-bold small text-muted">Class</label>
+                                <input type="text" class="form-control" name="class_name" id="id_class_name"
+                                    value="{{ form.class_name.value|default:'' }}" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="semester" class="form-label fw-bold small text-muted">Semester</label>
+                                <select name="semester" id="id_semester" class="form-select">
+                                    <option value="Semester 1" {% if form.semester.value=='Semester 1' %}selected{%
+                                        endif %}>Semester 1</option>
+                                    <option value="Semester 2" {% if form.semester.value=='Semester 2' %}selected{%
+                                        endif %}>Semester 2</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 mt-4 pt-3 border-top d-flex gap-2">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-check2-circle me-1"></i> Save Student
+                                </button>
+                                <a href="{% url 'attendance:student-list' %}"
+                                    class="btn btn-outline-secondary px-4">Cancel</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Info -->
+        <div class="col-lg-4">
+            <div class="card border-0 bg-primary-subtle mb-4">
+                <div class="card-body p-4">
+                    <h6 class="fw-bold text-primary mb-3">Notice</h6>
+                    <p class="small mb-0">Filling out this form will either create a new student record or update an
+                        existing one. Please ensure all details are accurate, especially the registration number and
+                        email, as these are critical for system access.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body p-4 text-center">
+                    <div class="bg-light rounded-circle p-3 d-inline-block mb-3">
+                        <i class="bi bi-person-badge fs-2 text-primary"></i>
+                    </div>
+                    <h6 class="fw-bold">Student Records</h6>
+                    <p class="small text-muted mb-0">You can manage all student data including grades, attendance, and
+                        profile information from this centralized panel.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

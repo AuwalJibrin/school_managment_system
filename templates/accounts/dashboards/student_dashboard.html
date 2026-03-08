@@ -10,15 +10,70 @@
                     <i class="bi bi-mortarboard" style="font-size: 8rem;"></i>
                 </div>
                 <h2 class="fw-bold">Hello, {{ user.username }}!</h2>
-                <p class="fs-5 mb-0 opacity-75">Ready to continue learning today?</p>
+                <p class="fs-5 mb-3 opacity-75">Ready to continue learning today?</p>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'attendance:student-attendance' %}"
+                        class="btn btn-light text-primary fw-bold px-4 shadow-sm">
+                        <i class="bi bi-calendar-event me-2"></i> My Attendance
+                    </a>
+                    <a href="{% url 'acceptance-letter' %}" class="btn btn-outline-light fw-bold px-4 shadow-sm">
+                        <i class="bi bi-file-earmark-pdf me-2"></i> Acceptance Letter
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <div class="row g-4">
-    <!-- Available Books -->
-    <div class="col-lg-8">
+    <!-- Recent Results -->
+    <div class="col-lg-8" id="results">
+        <h4 class="mb-3 fw-bold">Recent Academic Results</h4>
+        <div class="card border-0 shadow-sm mb-5">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Subject</th>
+                                <th>Term</th>
+                                <th>Score</th>
+                                <th class="text-end pe-4">Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in recent_results %}
+                            <tr>
+                                <td class="ps-4 fw-semibold">{{ record.subject.name }}</td>
+                                <td>{{ record.term.name }}</td>
+                                <td>{{ record.total }}/100</td>
+                                <td class="text-end pe-4">
+                                    <span class="badge rounded-pill 
+                                        {% if record.grade == 'A' %}bg-success
+                                        {% elif record.grade == 'F' %}bg-danger
+                                        {% else %}bg-warning text-dark{% endif %}">
+                                        {{ record.grade }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No results found yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if recent_results %}
+            <div class="card-footer bg-white border-0 py-3 text-center">
+                <a href="{% url 'results:result-list' %}" class="text-decoration-none small fw-bold">
+                    Visit the results page for a full academic report <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
         <h4 class="mb-3 fw-bold">Available Books</h4>
         <div class="row g-3">
             {% for book in books %}
@@ -33,7 +88,8 @@
                         <p class="card-text text-muted small mb-3">
                             Click to view details and start reading.
                         </p>
-                        <a href="#" class="btn btn-outline-primary btn-sm w-100">Read Now</a>
+                        <a href="{% url 'download_book' book.id %}" class="btn btn-outline-primary btn-sm w-100">Read
+                            Now</a>
                     </div>
                 </div>
             </div>
@@ -66,8 +122,23 @@
             <div class="card-header bg-white border-0 py-3">
                 <h5 class="card-title mb-0 fw-bold">Notices</h5>
             </div>
-            <div class="card-body">
-                <p class="text-muted small">No new announcements from your teachers.</p>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for notice in notices %}
+                    <div
+                        class="list-group-item border-0 border-bottom py-3 px-4 {% if not notice.is_read %}bg-light{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="fw-bold small">{{ notice.sender.username|default:"System" }}</span>
+                            <small class="text-muted">{{ notice.created_at|timesince }} ago</small>
+                        </div>
+                        <p class="mb-0 small text-dark">{{ notice.message }}</p>
+                    </div>
+                    {% empty %}
+                    <div class="p-4">
+                        <p class="text-muted small mb-0">No new announcements from your teachers.</p>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

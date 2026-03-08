@@ -1,0 +1,116 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Verify Attendance | TEF FUN{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-dark">Verify Attendance</h2>
+            <p class="text-muted">Review and verify student attendance claims.</p>
+        </div>
+    </div>
+
+    <!-- Rejection Modal -->
+    <div class="modal fade" id="rejectModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form method="post" class="modal-content">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reject">
+                <input type="hidden" name="attendance_id" id="reject_attendance_id">
+
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger">Reject Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Why are you rejecting this claim?</p>
+                    <textarea name="rejection_reason" class="form-control" rows="3" required
+                        placeholder="e.g. Student was absent, Not in uniform..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Confirm Reject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Date</th>
+                            <th>Status Detail</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in pending_records %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                        style="width: 32px; height: 32px;">
+                                        {{ record.student.user.username|make_list|first|upper }}
+                                    </div>
+                                    <span class="fw-semibold">{{
+                                        record.student.user.get_full_name|default:record.student.user.username }}</span>
+                                </div>
+                            </td>
+                            <td>{{ record.student.class_name }}</td>
+                            <td>{{ record.date }}</td>
+                            <td>
+                                {% if record.status == 'Late' %}
+                                <span class="badge bg-warning text-dark">LATE</span>
+                                {% elif record.status == 'Leave' %}
+                                <span class="badge bg-info text-dark mb-1">LEAVE REQUEST</span>
+                                <div class="small text-muted">{{ record.leave_reason }}</div>
+                                {% else %}
+                                <span class="badge bg-success">Present</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <form method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="attendance_id" value="{{ record.id }}">
+                                        <button type="submit" name="action" value="verify"
+                                            class="btn btn-sm btn-success">
+                                            <i class="bi bi-check-lg"></i> Verify
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                        onclick="openRejectModal('{{ record.id }}')">
+                                        <i class="bi bi-x-lg"></i> Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-check2-all fs-1 mb-2 d-block opacity-50"></i>
+                                No pending records.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openRejectModal(id) {
+        document.getElementById('reject_attendance_id').value = id;
+        var myModal = new bootstrap.Modal(document.getElementById('rejectModal'));
+        myModal.show();
+    }
+</script>
+{% endblock %}

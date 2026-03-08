@@ -1,0 +1,53 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Defaulters List | TEF FUN{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-danger fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Defaulters List</h2>
+    <p class="text-muted">Students with attendance less than 75%.</p>
+
+    <div class="card shadow border-danger">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Student</th>
+                            <th>Class</th>
+                            <th>Attendance %</th>
+                            <th>Days Present / Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in defaulters %}
+                        <tr>
+                            <td class="fw-bold">{{ item.student.user.get_full_name|default:item.student.user.username }}
+                            </td>
+                            <td>{{ item.student.class_name }}</td>
+                            <td>
+                                <span class="badge bg-danger rounded-pill fs-6">{{ item.percentage }}%</span>
+                            </td>
+                            <td>{{ item.present }} / {{ item.total }}</td>
+                            <td>
+                                <a href="mailto:{{ item.student.user.email }}" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-envelope me-1"></i> Alert Parent
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-check-circle-fill fs-1 text-success mb-2 d-block"></i>
+                                Good news! No defaulters found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

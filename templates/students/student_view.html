@@ -1,0 +1,148 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Student Details | TEF FUN{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Student Profile</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'redirect-dashboard' %}"
+                            class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'attendance:student-list' %}"
+                            class="text-decoration-none">Students</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">View Student</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="btn-group">
+            <a href="{% url 'attendance:student-edit' student.pk %}"
+                class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="bi bi-pencil"></i>
+                <span>Edit Profile</span>
+            </a>
+            <a href="{% url 'attendance:student-list' %}"
+                class="btn btn-outline-secondary d-flex align-items-center gap-2">
+                <i class="bi bi-arrow-left"></i>
+                <span>Back</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar profile card -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center d-flex flex-column justify-content-center align-items-center py-5">
+                    {% if student.user.profile_picture %}
+                    <img src="{{ student.user.profile_picture.url }}" alt="Profile Picture"
+                        class="rounded-circle mb-3 border shadow-sm"
+                        style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mb-3 shadow-sm mx-auto"
+                        style="width: 150px; height: 150px; font-size: 3rem;">
+                        {{ student.user.first_name|first|default:student.user.username|first|upper }}
+                    </div>
+                    {% endif %}
+
+                    <h3 class="fw-bold mb-1">{{ student.user.get_full_name|default:student.user.username }}</h3>
+                    <p class="text-muted mb-3"><i class="bi bi-person-badge me-2"></i>{{ student.admission_number }}</p>
+
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <span class="badge bg-info text-dark rounded-pill px-3 py-2 fs-6">
+                            <i class="bi bi-book me-1"></i> {{ student.class_name }}
+                        </span>
+                        <span class="badge bg-secondary rounded-pill px-3 py-2 fs-6">
+                            <i class="bi bi-calendar3 me-1"></i> {{ student.semester }}
+                        </span>
+                    </div>
+
+                    <div class="mt-4 w-100 text-start">
+                        <h6 class="text-muted text-uppercase mb-3 fw-bold border-bottom pb-2">Quick Stats</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Attendance:</span>
+                            <span
+                                class="fw-bold {% if student.attendance_percentage >= 75 %}text-success{% else %}text-danger{% endif %}">{{
+                                student.attendance_percentage }}%</span>
+                        </div>
+                        <div class="progress mt-2" style="height: 10px;">
+                            <div class="progress-bar {% if student.attendance_percentage >= 75 %}bg-success{% else %}bg-danger{% endif %}"
+                                role="progressbar" style="width: {{ student.attendance_percentage }}%;"
+                                aria-valuenow="{{ student.attendance_percentage }}" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail information -->
+        <div class="col-md-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2 text-primary"></i>Personal & Academic
+                        Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">Full Name</div>
+                        <div class="col-sm-8 fw-bold">{{ student.user.first_name }} {{ student.user.last_name }}</div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">Email Address</div>
+                        <div class="col-sm-8"><a href="mailto:{{ student.user.email }}" class="text-decoration-none">{{
+                                student.user.email }}</a></div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">Phone Number</div>
+                        <div class="col-sm-8">{{ student.user.phone_number|default:"N/A" }}</div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">Date of Birth</div>
+                        <div class="col-sm-8">{{ student.date_of_birth|date:"F d, Y"|default:"N/A" }}</div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">Gender</div>
+                        <div class="col-sm-8">{{ student.user.gender|default:"Not specified" }}</div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h6 class="text-primary fw-bold mb-3"><i class="bi bi-house-door me-2"></i>Address Details</h6>
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">Address</div>
+                        <div class="col-sm-8">{{ student.user.address|default:"N/A" }}</div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">State/Region</div>
+                        <div class="col-sm-8">{{ student.user.state|default:"N/A" }}</div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">Country</div>
+                        <div class="col-sm-8">{{ student.user.country|default:"N/A" }}</div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h6 class="text-primary fw-bold mb-3"><i class="bi bi-people me-2"></i>Guardian Information</h6>
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">Guardian Name</div>
+                        <div class="col-sm-8">{{ student.user.parent_guardian_name|default:"N/A" }}</div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-sm-4 text-muted">Guardian Relationship</div>
+                        <div class="col-sm-8">{{ student.user.parent_guardian_relationship|default:"N/A" }}</div>
+                    </div>
+                    <div class="row mb-0">
+                        <div class="col-sm-4 text-muted">Guardian Contact</div>
+                        <div class="col-sm-8">{{ student.user.parent_guardian_phone|default:"N/A" }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

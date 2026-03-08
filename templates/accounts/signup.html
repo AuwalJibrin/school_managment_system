@@ -2,59 +2,105 @@
 {% block title %}Sign Up | TEF FUN{% endblock %}
 
 {% block content %}
-<div class="card auth-card">
-    <div class="auth-header">
-        <h3 class="fw-bold mb-1">Create Account</h3>
-        <p class="text-muted">Join the community today</p>
+<div class="auth-header">
+    <h3 class="fw-bold mb-1">Create Account</h3>
+    <p class="text-muted small">Fill in the details to join our community</p>
+</div>
+
+<div class="auth-body">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    {% endfor %}
+    {% endif %}
 
-    <div class="auth-body">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-        {% endif %}
+    <form method="POST" enctype="multipart/form-data" id="signupForm">
+        {% csrf_token %}
 
-        <form method="POST">
-            {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+            <label class="form-label" for="{{ field.id_for_label }}">
+                {{ field.label }}
+            </label>
 
-            {% for field in form %}
-            <div class="mb-3">
-                <label class="form-label text-muted small fw-bold">{{ field.label }}</label>
-                {{ field.errors }}
-                <!-- Render field manually or inject class if using widgets in forms.py, generic fallback here -->
-                <div class="input-group">
-                    {% if 'password' in field.name %}
-                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
-                    {% else %}
-                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
-                    {% endif %}
+            <div class="input-group" id="group_{{ field.name }}">
+                <span class="input-group-text">
+                    {% if 'username' in field.name %}<i class="bi bi-person"></i>
+                    {% elif 'email' in field.name %}<i class="bi bi-envelope"></i>
+                    {% elif 'role' in field.name %}<i class="bi bi-person-badge"></i>
+                    {% elif 'password' in field.name %}<i class="bi bi-lock"></i>
+                    {% elif 'academic_document' in field.name %}<i class="bi bi-file-earmark-text"></i>
+                    {% else %}<i class="bi bi-pencil"></i>{% endif %}
+                </span>
 
-                    {% if field.field.widget.input_type == 'select' or field.field.choices %}
+                {% if 'role' in field.name %}
+                <select name="{{ field.name }}" id="id_role" class="form-select">
+                    {% for value, text in field.field.choices %}
+                    <option value="{{ value }}" {% if field.value == value %}selected{% endif %}>{{ text }}</option>
+                    {% endfor %}
+                </select>
+                {% elif 'academic_document' in field.name %}
+                <div class="form-control py-1">
                     {{ field }}
-                    {% else %}
-                    <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}"
-                        class="form-control border-start-0 ps-0" {% if field.value %}value="{{ field.value }}" {% endif
-                        %} {% if field.field.required %}required{% endif %}>
-                    {% endif %}
                 </div>
-                {% if field.help_text %}
-                <div class="form-text small">{{ field.help_text }}</div>
+                {% else %}
+                <input type="{{ field.field.widget.input_type|default:'text' }}" name="{{ field.name }}"
+                    id="{{ field.id_for_label }}" class="form-control" {% if not 'password' in field.name %}
+                    value="{{ field.value|default:'' }}" {% endif %} {% if field.field.required %}required{% endif %}
+                    placeholder="{{ field.label }}">
                 {% endif %}
             </div>
+
+            {% if field.help_text %}
+            <div class="help-text text-muted" {% if 'password' in field.name %}style="display:none;" {% endif %}>
+                {{ field.help_text|safe }}
+            </div>
+            {% if 'password' in field.name %}
+            <div class="help-text text-muted">
+                <small><i class="bi bi-info-circle me-1"></i> Password must be at least 8 characters.</small>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            {% for error in field.errors %}
+            <div class="text-danger small mt-1">
+                {{ error }}
+            </div>
             {% endfor %}
-
-            <button class="btn btn-primary w-100 shadow-sm mt-2">Sign Up</button>
-        </form>
-
-        <div class="text-center mt-4 pt-3 border-top">
-            <p class="text-muted small mb-0">
-                Already have an account? <a href="{% url 'signin' %}" class="fw-bold text-decoration-none">Sign In</a>
-            </p>
         </div>
+        {% endfor %}
+
+        <button class="btn btn-primary w-100 shadow-sm">Sign Up</button>
+    </form>
+
+    <div class="auth-footer">
+        <p class="text-muted small mb-0">
+            Already have an account? <a href="{% url 'signin' %}" class="fw-bold text-decoration-none text-primary">Sign
+                In</a>
+        </p>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const roleSelect = document.getElementById('id_role');
+        const docGroup = document.getElementById('group_academic_document').closest('.mb-3');
+
+        function toggleDoc() {
+            if (roleSelect.value === 'student') {
+                docGroup.style.display = 'block';
+            } else {
+                docGroup.style.display = 'none';
+            }
+        }
+
+        roleSelect.addEventListener('change', toggleDoc);
+        toggleDoc(); // Initial state
+    });
+</script>
 {% endblock %}

@@ -1,0 +1,112 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}{{ title|default:"Add/Edit Result" }} | TEF FUN{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-0">{{ title|default:"Add Result" }}</h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'redirect-dashboard' %}"
+                        class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'results:result-list' %}"
+                        class="text-decoration-none">Results</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ title|default:"Add Result" }}</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="card-title mb-0 fw-bold">Academic Performance Entry</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" action="">
+                        {% csrf_token %}
+
+                        <div class="row g-4">
+                            <!-- Selection Fields -->
+                            <div class="col-md-12">
+                                <label for="student" class="form-label small fw-bold text-muted">Select Student</label>
+                                <select name="student" id="id_student" class="form-select" required>
+                                    <option value="">Choose a student...</option>
+                                    {% for s in students %}
+                                    <option value="{{ s.id }}" {% if form.student.value==s.id|stringformat:"i"
+                                        %}selected{% endif %}>{{ s.user.get_full_name|default:s.user.username }} ({{
+                                        s.admission_number }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="subject" class="form-label small fw-bold text-muted">Subject</label>
+                                <select name="subject" id="id_subject" class="form-select" required>
+                                    <option value="">Choose subject...</option>
+                                    {% for sub in subjects %}
+                                    <option value="{{ sub.id }}" {% if form.subject.value==sub.id|stringformat:"i"
+                                        %}selected{% endif %}>{{ sub.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="term" class="form-label small fw-bold text-muted">Term / Semester</label>
+                                <select name="term" id="id_term" class="form-select" required>
+                                    <option value="">Choose term...</option>
+                                    {% for t in terms %}
+                                    <option value="{{ t.id }}" {% if form.term.value==t.id|stringformat:"i" %}selected{%
+                                        endif %}>{{ t.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Score Fields -->
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <label for="ca_score" class="form-label small fw-bold text-muted">Continuous
+                                        Assessment (CA)</label>
+                                    <input type="number" name="ca_score" id="id_ca_score" class="form-control"
+                                        placeholder="0-40" min="0" max="100" value="{{ form.ca_score.value|default:0 }}"
+                                        required>
+                                    <div class="form-text">Typically out of 30 or 40.</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3">
+                                    <label for="exam_score" class="form-label small fw-bold text-muted">Examination
+                                        Score</label>
+                                    <input type="number" name="exam_score" id="id_exam_score" class="form-control"
+                                        placeholder="0-70" min="0" max="100"
+                                        value="{{ form.exam_score.value|default:0 }}" required>
+                                    <div class="form-text">Typically out of 60 or 70.</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-center mt-5">
+                                <p class="small text-muted mb-3">
+                                    <i class="bi bi-info-circle me-1"></i> Total score and grade will be automatically
+                                    calculated upon saving.
+                                </p>
+                                <div class="d-flex justify-content-center gap-3">
+                                    <button type="submit" class="btn btn-primary px-5 py-2 shadow-sm">
+                                        <i class="bi bi-save me-2"></i> Save Result
+                                    </button>
+                                    <a href="{% url 'results:result-list' %}"
+                                        class="btn btn-outline-secondary px-5 py-2">
+                                        Back to List
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

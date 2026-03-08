@@ -1,0 +1,105 @@
+{% extends 'dashboard_base.html' %}
+
+{% block title %}Student List | TEF FUN{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark"><i class="bi bi-people me-2"></i>Student List</h2>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body bg-light rounded">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Semester</label>
+                    <select name="semester" class="form-select text-capitalize">
+                        <option value="">All Semesters</option>
+                        <option value="{{ sem }}" {% if request.GET.semester==sem %}selected{% endif %}>{{ sem }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold">Class</label>
+                    <select name="class" class="form-select">
+                        <option value="">All Classes</option>
+                        {% for cls in classes %}
+                        <option value="{{ cls }}" {% if request.GET.class==cls %}selected{% endif %}>{{ cls }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold">Search Student</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" class="form-control" placeholder="Name or Admission No..."
+                            value="{{ request.GET.search }}">
+                    </div>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Students Table -->
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th class="ps-4 py-3">Student Name</th>
+                            <th>Admission No</th>
+                            <th>Class</th>
+                            <th>Semester</th>
+                            <th>Attendance</th>
+                            <th class="pe-4 text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in students %}
+                        <tr>
+                            <td class="ps-4 fw-semibold">{{
+                                item.student.user.get_full_name|default:item.student.user.username }}</td>
+                            <td class="text-muted small">{{ item.student.admission_number }}</td>
+                            <td><span class="badge bg-secondary rounded-pill">{{ item.student.class_name }}</span></td>
+                            <td>{{ item.student.semester }}</td>
+                            <td>
+                                {% if item.percentage >= 75 %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">{{
+                                    item.percentage }}%</span>
+                                {% else %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">{{
+                                    item.percentage }}%</span>
+                                {% endif %}
+                            </td>
+                            <td class="pe-4 text-end">
+                                <a href="{% url 'attendance:admin-attendance' %}?student={{ item.student.user.username }}"
+                                    class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip"
+                                    title="View History">
+                                    <i class="bi bi-clock-history"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-person-x fs-1 mb-2 d-block opacity-50"></i>
+                                No students found matching current filters.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light text-muted small ps-4">
+            Showing {{ students|length }} students
+        </div>
+    </div>
+</div>
+{% endblock %}

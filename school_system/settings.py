@@ -40,8 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'school_web',
     'accounts',
-    
-
+    'attendance.apps.AttendanceConfig',
+    'results',
 ]
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.notification_processor',
             ],
         },
     },
@@ -120,7 +121,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [BASE_DIR/'static']
 
@@ -135,7 +136,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

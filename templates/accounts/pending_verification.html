@@ -1,0 +1,63 @@
+{% extends 'accounts/auth_base.html' %}
+{% block title %}Pending Verification | TEF FUN{% endblock %}
+
+{% block content %}
+<div class="text-center py-4">
+    <div class="mb-4">
+        <i class="bi bi-clock-history text-warning" style="font-size: 4rem;"></i>
+    </div>
+    <h3 class="fw-bold mb-3">Verification Pending</h3>
+    <p class="text-muted mb-4 px-3">
+        Hello <strong>{{ user.username }}</strong>, thank you for joining us! Your account is currently awaiting
+        administrative review.
+        We are verifying your academic document.
+    </p>
+
+    {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show small" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="bg-light p-3 rounded border mb-4 text-start">
+        <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-file-earmark-check text-primary me-2"></i>
+            <span class="fw-bold small text-dark">Submitted Document:</span>
+        </div>
+        <p class="small text-muted mb-0 text-truncate">
+            {% if user.academic_document %}
+            <a href="{{ user.academic_document.url }}" target="_blank" class="text-decoration-none">
+                {{ user.academic_document.name }}
+            </a>
+            {% else %}
+            No document found. This may cause delays.
+            {% endif %}
+        </p>
+    </div>
+
+    {% if user.rejection_reason %}
+    <div class="alert alert-danger text-start small mb-4">
+        <h6 class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i>Revision Required</h6>
+        <p class="mb-3">{{ user.rejection_reason }}</p>
+
+        <form method="POST" enctype="multipart/form-data" class="bg-white p-3 rounded border">
+            {% csrf_token %}
+            <label class="form-label fw-bold small">Re-upload Correct Document:</label>
+            <input type="file" name="academic_document" class="form-control form-control-sm mb-2" required>
+            <button type="submit" class="btn btn-danger btn-sm w-100">Update Document</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <p class="small text-muted">You will be granted access to the Student Dashboard once verified.</p>
+
+    <div class="mt-4 pt-3 border-top">
+        <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm px-4">Sign Out</a>
+    </div>
+</div>
+{% endblock %}

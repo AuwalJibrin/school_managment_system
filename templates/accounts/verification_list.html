@@ -1,0 +1,127 @@
+{% extends 'dashboard_base.html' %}
+{% block title %}Student Verification | Admin{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold text-dark">Student Verification</h2>
+            <p class="text-muted">Review and approve new student applications.</p>
+        </div>
+        <a href="{% url 'admin-dashboard' %}" class="btn btn-outline-primary">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Unverified Students -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="card-title mb-0 fw-bold">Awaiting Verification</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Student</th>
+                                <th>Documents</th>
+                                <th>Submitted</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in unverified_students %}
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark">{{ student.username }}</div>
+                                    <div class="small text-muted">{{ student.email }}</div>
+                                </td>
+                                <td>
+                                    {% if student.academic_document %}
+                                    <a href="{{ student.academic_document.url }}" target="_blank"
+                                        class="btn btn-sm btn-light text-primary">
+                                        <i class="bi bi-file-earmark-text me-1"></i> View Doc
+                                    </a>
+                                    {% else %}
+                                    <span class="text-danger small">No document</span>
+                                    {% endif %}
+                                </td>
+                                <td class="small">{{ student.date_joined|date:"M d, Y" }}</td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{% url 'approve-student' student.pk %}"
+                                            class="btn btn-sm btn-success">Approve</a>
+                                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
+                                            data-bs-target="#rejectModal{{ student.pk }}">Reject</button>
+                                    </div>
+
+                                    <!-- Reject Modal -->
+                                    <div class="modal fade" id="rejectModal{{ student.pk }}" tabindex="-1"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form method="POST" action="{% url 'reject-student' student.pk %}">
+                                                    {% csrf_token %}
+                                                    <div class="modal-header border-0">
+                                                        <h5 class="modal-title fw-bold">Reject Verification</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                            data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body text-start">
+                                                        <p>Provide a reason for rejecting <strong>{{ student.username
+                                                                }}</strong>. They will be notified.</p>
+                                                        <textarea name="reason" class="form-control" rows="3"
+                                                            placeholder="e.g. Document blurry, please re-upload."
+                                                            required></textarea>
+                                                    </div>
+                                                    <div class="modal-footer border-0">
+                                                        <button type="button" class="btn btn-light"
+                                                            data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-danger">Confirm
+                                                            Rejection</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="bi bi-check2-circle fs-1 mb-2 d-block opacity-50"></i>
+                                    No students awaiting verification.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recently Verified -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="card-title mb-0 fw-bold">Recently Verified</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for student in verified_students %}
+                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                    <div>
+                        <div class="fw-bold small text-dark">{{ student.username }}</div>
+                        <div class="text-muted smaller">{{ student.email }}</div>
+                    </div>
+                    <span class="badge bg-success-subtle text-success rounded-pill">Verified</span>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-center text-muted py-3">No verified students yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

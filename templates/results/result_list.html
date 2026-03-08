@@ -1,0 +1,178 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Results | TEF FUN{% endblock %}
+
+{% block extra_css %}
+<style>
+    .grade-badge {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 0.85rem;
+    }
+
+    .grade-A {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .grade-B {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+
+    .grade-C {
+        background-color: #e2e3e5;
+        color: #41464b;
+    }
+
+    .grade-D {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+
+    .grade-F {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Academic Results</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'redirect-dashboard' %}"
+                            class="text-decoration-none">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Results</li>
+                </ol>
+            </nav>
+        </div>
+        <a href="{% url 'results:result-add' %}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-plus-circle"></i>
+            <span>Add Result</span>
+        </a>
+    </div>
+
+    <!-- Filters Row - Omit if student -->
+    {% if not is_student %}
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label class="small fw-bold text-muted mb-1">Student</label>
+                    <select name="student" class="form-select">
+                        <option value="">All Students</option>
+                        {% for s in students %}
+                        <option value="{{ s.id }}" {% if request.GET.student==s.id|stringformat:"i" %}selected{% endif
+                            %}>{{ s.user.get_full_name|default:s.user.username }} ({{ s.admission_number }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="small fw-bold text-muted mb-1">Term</label>
+                    <select name="term" class="form-select">
+                        <option value="">All Terms</option>
+                        {% for t in terms %}
+                        <option value="{{ t.id }}" {% if request.GET.term==t.id|stringformat:"i" %}selected{% endif %}>
+                            {{ t.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="small fw-bold text-muted mb-1">Subject</label>
+                    <select name="subject" class="form-select">
+                        <option value="">All Subjects</option>
+                        {% for sub in subjects %}
+                        <option value="{{ sub.id }}" {% if request.GET.subject==sub.id|stringformat:"i" %}selected{%
+                            endif %}>{{ sub.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-dark w-100">Apply</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Results Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Student</th>
+                            <th>Subject</th>
+                            <th>Term</th>
+                            <th class="text-center">CA</th>
+                            <th class="text-center">Exam</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center">Grade</th>
+                            {% if not is_student %}
+                            <th class="text-end pe-4">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold">{{
+                                    result.student.user.get_full_name|default:result.student.user.username }}</div>
+                                <div class="small text-muted">{{ result.student.admission_number }}</div>
+                            </td>
+                            <td>{{ result.subject.name }}</td>
+                            <td>{{ result.term.name }}</td>
+                            <td class="text-center">{{ result.ca_score }}</td>
+                            <td class="text-center">{{ result.exam_score }}</td>
+                            <td class="text-center fw-bold">{{ result.total }}</td>
+                            <td class="text-center">
+                                <span class="grade-badge grade-{{ result.grade|default:'F' }} mx-auto">
+                                    {{ result.grade|default:'F' }}
+                                </span>
+                            </td>
+                            {% if not is_student %}
+                            <td class="text-end pe-4">
+                                <div class="dropdown">
+                                    <button class="btn btn-link text-dark p-0" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                        <li><a class="dropdown-item" href="{% url 'results:result-edit' result.pk %}"><i
+                                                    class="bi bi-pencil me-2"></i>Edit</a></li>
+                                        <li><a class="dropdown-item text-danger"
+                                                href="{% url 'results:result-delete' result.pk %}"><i
+                                                    class="bi bi-trash me-2"></i>Delete</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <div class="text-muted mb-2">
+                                    <i class="bi bi-file-earmark-x fs-1"></i>
+                                </div>
+                                <p class="mb-0">No academic records found.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -27,7 +27,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('school_web.urls')),
     path('', include('accounts.urls')),
-  
+    path('attendance/', include('attendance.urls')),
+    path('results/', include('results.urls', namespace='results')),
 ]
 
 if settings.DEBUG:

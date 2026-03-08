@@ -7,10 +7,21 @@
         <h2 class="fw-bold text-dark">Staff Dashboard</h2>
         <p class="text-muted">Manage your students and assigned resources.</p>
     </div>
+    <div class="col-12 mb-3">
+        <a href="{% url 'attendance:verify-attendance' %}" class="btn btn-warning text-dark fw-bold position-relative">
+            <i class="bi bi-calendar-check me-2"></i> Verify Attendance
+            {% if pending_attendance_count > 0 %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{ pending_attendance_count }}
+                <span class="visually-hidden">unread messages</span>
+            </span>
+            {% endif %}
+        </a>
+    </div>
 </div>
 
 <div class="row g-4 mb-5">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card card-stats bg-success text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -23,7 +34,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card card-stats bg-danger text-white h-100">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
@@ -36,11 +47,24 @@
             </div>
         </div>
     </div>
+    <div class="col-md-4">
+        <div class="card card-stats bg-info text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0">Total Results</h6>
+                        <h2 class="mt-2 mb-0 fw-bold">{{ total_results }}</h2>
+                    </div>
+                    <i class="bi bi-file-earmark-bar-graph fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row g-4">
     <!-- Student List -->
-    <div class="col-lg-8">
+    <div class="col-lg-8" id="students">
         <div class="card border-0 shadow-sm h-100">
             <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0 fw-bold">My Students</h5>
@@ -70,8 +94,10 @@
                                 </td>
                                 <td>{{ student.email }}</td>
                                 <td class="text-end pe-4">
-                                    <button class="btn btn-sm btn-light text-primary"><i class="bi bi-chat-dots"></i>
-                                        Message</button>
+                                    <a href="{% url 'send-notification' %}?recipient={{ student.pk }}"
+                                        class="btn btn-sm btn-light text-primary">
+                                        <i class="bi bi-chat-dots"></i> Message
+                                    </a>
                                 </td>
                             </tr>
                             {% empty %}
@@ -105,6 +131,30 @@
                 <li class="list-group-item text-center text-muted py-3">No books available.</li>
                 {% endfor %}
             </ul>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="card-title mb-0 fw-bold">Notices</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for notice in notices %}
+                    <div
+                        class="list-group-item border-0 border-bottom py-3 px-4 {% if not notice.is_read %}bg-light{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="fw-bold small">{{ notice.sender.username|default:"System" }}</span>
+                            <small class="text-muted">{{ notice.created_at|timesince }} ago</small>
+                        </div>
+                        <p class="mb-0 small text-dark">{{ notice.message }}</p>
+                    </div>
+                    {% empty %}
+                    <div class="p-4">
+                        <p class="text-muted small mb-0">No new notices.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 </div>

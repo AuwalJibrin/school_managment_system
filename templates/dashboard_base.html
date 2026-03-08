@@ -38,29 +38,80 @@
 
             {% if user.role == "admin" %}
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link {% if request.resolver_match.url_name == 'admin-dashboard' %}active{% endif %}"
+                    href="{% url 'admin-dashboard' %}">
                     <i class="bi bi-people"></i> Users
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link {% if request.resolver_match.url_name == 'book-list' %}active{% endif %}"
+                    href="{% url 'book-list' %}">
                     <i class="bi bi-book"></i> Books
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'verification-list' %}active{% endif %}"
+                    href="{% url 'verification-list' %}">
+                    <i class="bi bi-shield-check"></i> Verify Students
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'student' in request.path %}active{% endif %}"
+                    href="{% url 'attendance:student-list' %}">
+                    <i class="bi bi-mortarboard"></i> Student Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'results' in request.path %}active{% endif %}"
+                    href="{% url 'results:result-list' %}">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Result Management
                 </a>
             </li>
             {% endif %}
 
             {% if user.role == "staff" %}
             <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="bi bi-people"></i> My Students
+                <a class="nav-link {% if request.resolver_match.url_name == 'staff-dashboard' %}active{% endif %}"
+                    href="{% url 'staff-dashboard' %}">
+                    <i class="bi bi-grid"></i> Overview
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'verify-attendance' %}active{% endif %}"
+                    href="{% url 'attendance:verify-attendance' %}">
+                    <i class="bi bi-check-circle"></i> Verify Attendance
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'staff-student-list' or 'student' in request.path %}active{% endif %}"
+                    href="{% url 'attendance:student-list' %}">
+                    <i class="bi bi-people"></i> Student List
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'results' in request.path %}active{% endif %}"
+                    href="{% url 'results:result-list' %}">
+                    <i class="bi bi-file-earmark-bar-graph"></i> Results
                 </a>
             </li>
             {% endif %}
 
             {% if user.role == "student" %}
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{% url 'student-dashboard' %}#books">
                     <i class="bi bi-journal-bookmark"></i> My Assignments
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'acceptance-letter' %}active{% endif %}"
+                    href="{% url 'acceptance-letter' %}" target="_blank">
+                    <i class="bi bi-file-earmark-pdf"></i> Acceptance Letter
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if 'results' in request.path %}active{% endif %}"
+                    href="{% url 'results:result-list' %}">
+                    <i class="bi bi-file-earmark-bar-graph"></i> My Results
                 </a>
             </li>
             {% endif %}
@@ -80,17 +131,71 @@
         </button>
 
         <div class="d-flex align-items-center ms-auto">
+            <!-- Notifications Dropdown -->
+            <div class="dropdown me-3">
+                <a href="#" class="text-dark position-relative" id="notificationDropdown" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bi bi-bell fs-5"></i>
+                    {% if unread_count > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style="font-size: 0.6rem;">
+                        {{ unread_count }}
+                    </span>
+                    {% endif %}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 py-0 overflow-hidden"
+                    aria-labelledby="notificationDropdown" style="width: 300px;">
+                    <li class="p-3 border-bottom bg-light">
+                        <h6 class="mb-0 fw-bold">Notifications</h6>
+                    </li>
+                    <div class="notification-list" style="max-height: 350px; overflow-y: auto;">
+                        {% for n in unread_notifications %}
+                        <li>
+                            <a class="dropdown-item p-3 border-bottom d-flex align-items-start gap-3"
+                                href="{% url 'mark-notification-read' n.pk %}">
+                                <div class="bg-primary-subtle text-primary rounded-circle p-2">
+                                    <i class="bi bi-info-circle"></i>
+                                </div>
+                                <div class="text-wrap">
+                                    <p class="mb-1 small text-dark">{{ n.message }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">{{ n.sender.username|default:"System" }}</small>
+                                        <small class="text-muted">{{ n.created_at|timesince }} ago</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        {% empty %}
+                        <li class="p-4 text-center text-muted">
+                            <i class="bi bi-bell-slash mb-2 d-block fs-3"></i>
+                            <p class="mb-0 small">No unread notifications</p>
+                        </li>
+                        {% endfor %}
+                    </div>
+                    {% if unread_count > 0 %}
+                    <li class="bg-light p-2 text-center border-top">
+                        <a href="#" class="text-decoration-none small fw-bold">View All</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle"
                     id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="rounded-circle me-2 object-fit-cover"
+                        style="width: 32px; height: 32px;" alt="Profile">
+                    {% else %}
                     <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
                         style="width: 32px; height: 32px;">
                         {{ user.username|make_list|first|upper }}
                     </div>
+                    {% endif %}
                     <span>{{ user.username }}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
                     <li>
                         <hr class="dropdown-divider">
                     </li>

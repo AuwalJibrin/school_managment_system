@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Attendance Report</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 2cm;
+
+            @frame header_frame {
+                -pdf-frame-content: header_content;
+                left: 50pt;
+                width: 512pt;
+                top: 50pt;
+                height: 40pt;
+            }
+
+            @frame footer_frame {
+                -pdf-frame-content: footer_content;
+                left: 50pt;
+                width: 512pt;
+                top: 772pt;
+                height: 20pt;
+            }
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 10pt;
+            color: #333333;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 18pt;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: bold;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #dee2e6;
+            vertical-align: middle;
+        }
+
+        .status-present {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .status-absent {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-late {
+            color: #fd7e14;
+            font-weight: bold;
+        }
+
+        .status-leave {
+            color: #0dcaf0;
+            font-weight: bold;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-muted {
+            color: #6c757d;
+            font-size: 9pt;
+        }
+
+        .badge {
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 8pt;
+        }
+
+        .bg-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .bg-warning {
+            background-color: #fff3cd;
+            color: #664d03;
+        }
+
+        .bg-danger {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header_content">
+        <p style="text-align: right; font-size: 9pt; color: #666;">Generated on: {% now "F j, Y, h:i A" %}</p>
+    </div>
+
+    <h1>Attendance Report</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Verification</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for att in attendances %}
+            <tr>
+                <td>{{ att.date|date:"M d, Y" }}</td>
+                <td>{{ att.student.user.get_full_name|default:att.student.user.username }}<br>
+                    <span class="text-muted">{{ att.student.admission_number }}</span>
+                </td>
+                <td>{{ att.student.class_name }}</td>
+                <td>{% if att.check_in_time %}{{ att.check_in_time|time:"H:i" }}{% else %}-{% endif %}</td>
+                <td>
+                    <span class="status-{{ att.status|lower }}">{{ att.status }}</span>
+                </td>
+                <td>
+                    {% if att.verification_status == 'Verified' %}
+                    <span class="badge bg-success">Verified</span>
+                    {% elif att.verification_status == 'Pending' %}
+                    <span class="badge bg-warning">Pending</span>
+                    {% else %}
+                    <span class="badge bg-danger">Rejected</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">No attendance records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="footer_content">
+        <p class="text-center text-muted">Page <pdf:pagenumber> of <pdf:pagecount>
+        </p>
+    </div>
+</body>
+
+</html>
